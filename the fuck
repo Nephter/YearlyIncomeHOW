@@ -1,0 +1,46 @@
+pragma solidity ^0.8.0;
+
+contract Company {
+    
+//all units of time converted to minutes
+    uint day = 1440;
+    uint year = 525600;
+    uint8 payIncrement = 2;
+
+    struct Worker {
+        string name;
+        uint32 pay;
+        uint32 tenure;
+        uint startDate;
+        uint yearsIncome;
+        uint totalIncome;
+}
+//                                                                      reduce gas costs
+    Worker[] public workers;
+    
+//add worker to Ledger
+function addWorker(string memory _name) public {
+    workers.push(Worker(_name, 1, 0, (block.timestamp/day), 0, 0));
+}
+//remove worker from Ledger without preserving array.index order
+function removeWorkerBreakOrder(uint _workerId) public {
+    delete workers[_workerId];
+}
+//remove worker from Ledger preserving array.index order
+function removeWorkerPreserveOrder(uint _workerId) public {
+    for (uint i = _workerId; i < workers.length - 1; i++) {
+            workers[i] = workers[i + 1];
+}       workers.pop();
+}
+//year++ (Worker recieves pay increase, tenure++ by year, total income reflects) 
+function cycleOneYear(uint _workerId) public {
+//    uint yearlyIncome = year ** workers[_workerId].pay;
+        workers[_workerId].yearsIncome = year ** workers[_workerId].pay;
+        workers[_workerId].tenure++;
+        workers[_workerId].pay++;
+}
+//subtracts income of days off from workers total income...(no holiday pay 4 ur lil bitch ass)
+//function goOnHoliday(uint _workerId, uint _daysOff) public {
+//    uint workersIncomeLoss = (_daysOff ** workers[_workerId].pay);
+//        workers[_workerId].totalIncome = workers[_workerId].yearsIncome - workersIncomeLoss;
+}
